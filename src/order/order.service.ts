@@ -35,7 +35,7 @@ export class OrderService {
   }
 
   async update(id: number, order: Order): Promise<Order> {
-    const oldOrder = await this.orderRepository.findOne({ id });
+    const oldOrder = await this.orderRepository.findOneBy({ id });
     const coffee = await this.coffeeRepository.findOne(order.coffeeId);
 
     if (coffee.stock + oldOrder.quantity < order.quantity) {
