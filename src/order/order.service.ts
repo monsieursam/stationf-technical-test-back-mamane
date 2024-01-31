@@ -1,5 +1,5 @@
 // order.service.ts
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
@@ -23,6 +23,11 @@ export class OrderService {
 
   async create(order: Order): Promise<Order> {
     const coffee = await this.coffeeRepository.findOne(order.coffeeId);
+
+    if (coffee.stock < order.quantity) {
+      throw new BadRequestException('Insufficient stock');
+    }
+
     coffee.stock -= order.quantity;
     await this.coffeeRepository.update(order.coffeeId, coffee);
 
@@ -30,8 +35,12 @@ export class OrderService {
   }
 
   async update(id: number, order: Order): Promise<Order> {
-    const oldOrder = await this.orderRepository.findOneBy({ id });
+    const oldOrder = await this.orderRepository.findOne({ id });
     const coffee = await this.coffeeRepository.findOne(order.coffeeId);
+
+    if (coffee.stock + oldOrder.quantity < order.quantity) {
+      throw new BadRequestException('Insufficient stock');
+    }
 
     coffee.stock += oldOrder.quantity; // Revert the old order
     coffee.stock -= order.quantity; // Apply the new order
