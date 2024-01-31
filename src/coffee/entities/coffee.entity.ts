@@ -16,6 +16,9 @@ export class Coffee {
   @Column()
   size: string;
 
+  @Column()
+  stock: number;
+
   @OneToMany(() => Order, (order) => order.coffee)
   orders: Order[];
 }

@@ -5,4 +5,5 @@ export class UpdateCoffeeDto extends PartialType(CreateCoffeeDto) {
   name: string;
   price: number;
   size: string;
+  stock: number;
 }
